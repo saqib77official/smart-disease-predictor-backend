@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/saqibullah/smart-disease-predictor-backend/api"
 )
@@ -19,5 +21,10 @@ func main() {
 	})
 	r.POST("/predict", api.PredictHandler)
 	r.POST("/extract", api.ExtractHandler)
-	r.Run(":8080")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }
