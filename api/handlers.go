@@ -38,7 +38,7 @@ func PredictHandler(c *gin.Context) {
 		SetResult(&struct {
 			Prediction string `json:"prediction"`
 		}{}).
-		Post("http://localhost:5000/predict")
+		Post("https://smart-disease-predictor-ml.onrender.com/predict")
 	if err != nil {
 		fmt.Printf("Error connecting to ML server: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to ML server: " + err.Error()})
