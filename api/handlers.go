@@ -112,11 +112,11 @@ func ExtractHandler(c *gin.Context) {
 patterns := map[string]*regexp.Regexp{
     "Pregnancies":              regexp.MustCompile((?i)Pregnancies\s*[:=\-]?\s*(\d+)),
     "Glucose":                  regexp.MustCompile((?i)Glucose\s*[:=\-]?\s*(\d+\.?\d*)),
-    "BloodPressure":            regexp.MustCompile((?i)(Blood\s*Pressure|BloodPressure)\s*[:=\-]?\s*(\d+\.?\d*)),
-    "SkinThickness":            regexp.MustCompile((?i)(Skin\s*Thickness|SkinThickness)\s*[:=\-]?\s*(\d+\.?\d*)),
+    "BloodPressure":            regexp.MustCompile((?i)Blood\s*Pressure\s*[:=\-]?\s*(\d+\.?\d*)),
+    "SkinThickness":            regexp.MustCompile((?i)Skin\s*Thickness\s*[:=\-]?\s*(\d+\.?\d*)),
     "Insulin":                  regexp.MustCompile((?i)Insulin\s*[:=\-]?\s*(\d+\.?\d*)),
     "BMI":                      regexp.MustCompile((?i)BMI\s*[:=\-]?\s*(\d+\.?\d*)),
-    "DiabetesPedigreeFunction": regexp.MustCompile((?i)(Diabetes\s*Pedigree\s*Function|DiabetesPedigreeFunction|DPF)\s*[:=\-]?\s*(\d+\.?\d*)),
+    "DiabetesPedigreeFunction": regexp.MustCompile((?i)Diabetes\s*Pedigree\s*Function\s*[:=\-]?\s*(\d+\.?\d*)),
     "Age":                      regexp.MustCompile((?i)Age\s*[:=\-]?\s*(\d+)),
 }
 
