@@ -109,16 +109,16 @@ func ExtractHandler(c *gin.Context) {
 
 	// Extract data using regex
 	extracted := make(map[string]float64)
-	patterns := map[string]*regexp.Regexp{
-		"Pregnancies":              regexp.MustCompile(`(?i)Pregnancies:\s*(\d+)`),
-		"Glucose":                  regexp.MustCompile(`(?i)Glucose:\s*(\d+\.?\d*)`),
-		"BloodPressure":            regexp.MustCompile(`(?i)BloodPressure:\s*(\d+\.?\d*)`),
-		"SkinThickness":            regexp.MustCompile(`(?i)SkinThickness:\s*(\d+\.?\d*)`),
-		"Insulin":                  regexp.MustCompile(`(?i)Insulin:\s*(\d+\.?\d*)`),
-		"BMI":                      regexp.MustCompile(`(?i)BMI:\s*(\d+\.?\d*)`),
-		"DiabetesPedigreeFunction": regexp.MustCompile(`(?i)DiabetesPedigreeFunction:\s*(\d+\.?\d*)`),
-		"Age":                      regexp.MustCompile(`(?i)Age:\s*(\d+)`),
-	}
+patterns := map[string]*regexp.Regexp{
+    "Pregnancies":              regexp.MustCompile((?i)Pregnancies\s*[:=\-]?\s*(\d+)),
+    "Glucose":                  regexp.MustCompile((?i)Glucose\s*[:=\-]?\s*(\d+\.?\d*)),
+    "BloodPressure":            regexp.MustCompile((?i)(Blood\s*Pressure|BloodPressure)\s*[:=\-]?\s*(\d+\.?\d*)),
+    "SkinThickness":            regexp.MustCompile((?i)(Skin\s*Thickness|SkinThickness)\s*[:=\-]?\s*(\d+\.?\d*)),
+    "Insulin":                  regexp.MustCompile((?i)Insulin\s*[:=\-]?\s*(\d+\.?\d*)),
+    "BMI":                      regexp.MustCompile((?i)BMI\s*[:=\-]?\s*(\d+\.?\d*)),
+    "DiabetesPedigreeFunction": regexp.MustCompile((?i)(Diabetes\s*Pedigree\s*Function|DiabetesPedigreeFunction|DPF)\s*[:=\-]?\s*(\d+\.?\d*)),
+    "Age":                      regexp.MustCompile((?i)Age\s*[:=\-]?\s*(\d+)),
+}
 
 	for key, re := range patterns {
 		if match := re.FindStringSubmatch(ocrText); len(match) > 1 {
