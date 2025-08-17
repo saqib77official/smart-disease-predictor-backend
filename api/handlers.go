@@ -79,7 +79,7 @@ func ExtractHandler(c *gin.Context) {
 		return
 	}
 
-	// Run Tesseract OCR using command line
+	// Run Tesseract OCR
 	outputFile := "output"
 	cmd := exec.Command("tesseract", tempPath, outputFile, "-l", "eng")
 	if err := cmd.Run(); err != nil {
@@ -97,40 +97,45 @@ func ExtractHandler(c *gin.Context) {
 		return
 	}
 	defer os.Remove(outputFile + ".txt")
-	fmt.Printf("OCR output: %s\n", string(text))
 
-	// Convert text to string
 	ocrText := strings.TrimSpace(string(text))
+	fmt.Printf("OCR output:\n%s\n", ocrText)
+
 	if ocrText == "" {
 		fmt.Println("OCR output is empty")
 		c.JSON(http.StatusOK, gin.H{"extracted": map[string]float64{}})
 		return
 	}
 
-	// Extract data using regex
-	extracted := make(map[string]float64)
-patterns := map[string]*regexp.Regexp{
-    "Pregnancies":              regexp.MustCompile((?i)Pregnancies\s*[:=\-]?\s*(\d+)),
-    "Glucose":                  regexp.MustCompile((?i)Glucose\s*[:=\-]?\s*(\d+\.?\d*)),
-    "BloodPressure":            regexp.MustCompile((?i)Blood\s*Pressure\s*[:=\-]?\s*(\d+\.?\d*)),
-    "SkinThickness":            regexp.MustCompile((?i)Skin\s*Thickness\s*[:=\-]?\s*(\d+\.?\d*)),
-    "Insulin":                  regexp.MustCompile((?i)Insulin\s*[:=\-]?\s*(\d+\.?\d*)),
-    "BMI":                      regexp.MustCompile((?i)BMI\s*[:=\-]?\s*(\d+\.?\d*)),
-    "DiabetesPedigreeFunction": regexp.MustCompile((?i)Diabetes\s*Pedigree\s*Function\s*[:=\-]?\s*(\d+\.?\d*)),
-    "Age":                      regexp.MustCompile((?i)Age\s*[:=\-]?\s*(\d+)),
-}
+	// Normalize common OCR variants
+	ocrText = strings.ReplaceAll(ocrText, "BloodPressure", "Blood Pressure")
+	ocrText = strings.ReplaceAll(ocrText, "SkinThickness", "Skin Thickness")
+	ocrText = strings.ReplaceAll(ocrText, "DPF", "Diabetes Pedigree Function")
 
+	// Regex patterns
+	patterns := map[string]*regexp.Regexp{
+		"Pregnancies":              regexp.MustCompile((?i)Pregnancies\s*[:=\-]?\s*(\d+)),
+		"Glucose":                  regexp.MustCompile((?i)Glucose\s*[:=\-]?\s*(\d+\.?\d*)),
+		"BloodPressure":            regexp.MustCompile((?i)Blood\s*Pressure\s*[:=\-]?\s*(\d+\.?\d*)),
+		"SkinThickness":            regexp.MustCompile((?i)Skin\s*Thickness\s*[:=\-]?\s*(\d+\.?\d*)),
+		"Insulin":                  regexp.MustCompile((?i)Insulin\s*[:=\-]?\s*(\d+\.?\d*)),
+		"BMI":                      regexp.MustCompile((?i)BMI\s*[:=\-]?\s*(\d+\.?\d*)),
+		"DiabetesPedigreeFunction": regexp.MustCompile((?i)Diabetes\s*Pedigree\s*Function\s*[:=\-]?\s*(\d+\.?\d*)),
+		"Age":                      regexp.MustCompile((?i)Age\s*[:=\-]?\s*(\d+)),
+	}
+
+	// Extract values
+	extracted := make(map[string]float64)
 	for key, re := range patterns {
 		if match := re.FindStringSubmatch(ocrText); len(match) > 1 {
-			f, err := strconv.ParseFloat(match[1], 64)
-			if err != nil {
+			if f, err := strconv.ParseFloat(match[1], 64); err == nil {
+				extracted[key] = f
+			} else {
 				fmt.Printf("Error parsing %s: %v\n", key, err)
-				continue
 			}
-			extracted[key] = f
 		}
 	}
 
 	fmt.Printf("Extracted data: %v\n", extracted)
-	c.JSON(http.StatusOK, gin.H{"extracted": extracted})
+	c.JSON(http.StatusOK, gin.H{"extracted": extracted})
 }
